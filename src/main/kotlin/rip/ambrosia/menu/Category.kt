@@ -19,6 +19,6 @@ open class Category(val parent: MainWindow,     @Expose val title: String, val i
         return null
     }
     enum class Group(val index: Int) {
-        CATEGORIES(0), GROUP(1);
+        CATEGORIES(0), OTHER(1);
     }
 }

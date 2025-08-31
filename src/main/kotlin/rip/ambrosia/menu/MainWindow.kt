@@ -6,18 +6,18 @@ import java.util.*
 
 class MainWindow {
     class MainCategory(val window: MainWindow) : Category(window, "Основное", "house") {
-        val attackAura: Subcategory = createSubcategory("Аура", "H")
-        val blatant: Subcategory = createSubcategory("Легит", "H")
-        val legit = createSubcategory("Действия", "H")
-        val handle = createSubcategory("Аукцион", "H")
+        val attackAura: Subcategory = createSubcategory("Аура", "sword")
+        val blatant: Subcategory = createSubcategory("Легит", "sword")
+        val legit = createSubcategory("Действия", "sword")
+        val handle = createSubcategory("Аукцион", "sword")
     }
     class MovementCategory(val window: MainWindow) : Category(window, "Движение", "person") {
 
     }
     class VisualCategory(val window: MainWindow) : Category(window, "Визуалы", "visual") {
-        val display: Subcategory = createSubcategory("Оверлей", "H")
-        val world: Subcategory = createSubcategory("Мир", "H")
-        val entities: Subcategory = createSubcategory("Ентити", "H")
+        val display: Subcategory = createSubcategory("Оверлей", "sword")
+        val world: Subcategory = createSubcategory("Мир", "sword")
+        val entities: Subcategory = createSubcategory("Ентити", "sword")
     }
 
     @Expose
@@ -27,7 +27,7 @@ class MainWindow {
     val visual: VisualCategory = createCategory(VisualCategory(this), Category.Group.CATEGORIES)
     val environment: Category = createCategory(Category(this, "Окружение", "pickaxe"), Category.Group.CATEGORIES)
     val information: Category = createCategory(Category(this, "Информация", "loupe"), Category.Group.CATEGORIES)
-    val configs: Category = createCategory(Category(this, "Конфиги", "G"), Category.Group.GROUP)
+    val configs: Category = createCategory(Category(this, "Конфиги", "gear"), Category.Group.OTHER)
 
     constructor() {
 

@@ -77,14 +77,6 @@ tasks.register('copyWeb', Copy) {
 }
 
 
-sourceSets {
-	main {
-		resources {
-			srcDirs "src-theme/resources"
-		}
-	}
-}
-
 java {
 	withSourcesJar()
 
