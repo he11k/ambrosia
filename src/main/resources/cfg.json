@@ -1,0 +1,95 @@
+{
+  "categories": {
+    "CATEGORIES": [
+      {
+        "title": "Main",
+        "subcategories": [
+          {
+            "title": "Attack-Aura",
+            "frames": [
+              {
+                "title": "Static",
+                "buttons": [
+                  {
+                    "title": "Active",
+                    "type": "CHECKBOX",
+                    "value": false
+                  },
+                  {
+                    "title": "Super",
+                    "type": "CHECKBOX",
+                    "value": true
+                  },
+                  {
+                    "title": "Super",
+                    "type": "SLIDER",
+                    "value": 1.0
+                  },
+                  {
+                    "title": "Super",
+                    "type": "MULTISLIDER",
+                    "value": {
+                      "minimum": 0.4,
+                      "maximum": 0.5
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Blatant",
+            "frames": []
+          },
+          {
+            "title": "Legit",
+            "frames": []
+          },
+          {
+            "title": "Handle",
+            "frames": []
+          },
+          {
+            "title": "Auction",
+            "frames": []
+          }
+        ]
+      },
+      {
+        "title": "Movement",
+        "subcategories": []
+      },
+      {
+        "title": "Visual",
+        "subcategories": [
+          {
+            "title": "Display",
+            "frames": []
+          },
+          {
+            "title": "World",
+            "frames": []
+          },
+          {
+            "title": "Entities",
+            "frames": []
+          }
+        ]
+      },
+      {
+        "title": "Environment",
+        "subcategories": []
+      },
+      {
+        "title": "Information",
+        "subcategories": []
+      }
+    ],
+    "GROUP": [
+      {
+        "title": "Configs",
+        "subcategories": []
+      }
+    ]
+  }
+}
