@@ -19,6 +19,7 @@ import rip.ambrosia.config.ConfigProvider
 import rip.ambrosia.event.*
 import rip.ambrosia.localserver.MenuHttpServer
 import rip.ambrosia.menu.Menu
+import rip.ambrosia.module.Test
 import rip.ambrosia.util.extensions.mc
 import rip.ambrosia.util.web.FolderMover
 
@@ -34,6 +35,7 @@ object Ambrosia : ModInitializer {
 
     override fun onInitialize() {
         MCEFDownloadManager.sinit()
+        Test()
         MenuHttpServer().load()
         logger.info("Ambrosia was loaded")
         eventBus.register(listener)
