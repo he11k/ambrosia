@@ -12,11 +12,12 @@ class Checkbox(
     title: String,
     description: String,
     value: Boolean,
+    contentKey: String,
     @Expose
     var key: Int = -1,
    private val enable: ButtonCallback?,
     private val disable: ButtonCallback?
-) : Button<Boolean>(frame, icon, title,  description, ButtonType.CHECKBOX, value) {
+) : Button<Boolean>(frame, icon, title,  description, ButtonType.CHECKBOX, contentKey,value) {
 
     fun updateKey(key: Int) {
         if (this.key == key) {
@@ -42,7 +43,7 @@ class Checkbox(
     }
 }
 
-class CheckboxBuilder(frame: Frame, title: String, value: Boolean) :
+class CheckboxBuilder(frame: Frame, title: String, value: Boolean, val contentKey: String) :
     ButtonBuilder<Checkbox, Boolean, CheckboxBuilder?>(frame, title, value) {
     var bindable: Boolean = false
     var key: Int = -1
@@ -72,7 +73,7 @@ class CheckboxBuilder(frame: Frame, title: String, value: Boolean) :
     override fun build(): Checkbox {
         val checkbox = Checkbox(
             frame, icon, title, description,
-            value, key, enable, disable
+            value, contentKey , key, enable, disable
         )
         checkbox.conditions(activeConditions, renderConditions)
         frame.addButton(checkbox)

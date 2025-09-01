@@ -12,11 +12,12 @@ class MultiSlider(
     title: String,
     description: String,
     value: MultiSliderValue,
+    contentKey: String,
     var minimum: Float,
     var maximum: Float,
     var increment: Float
 ) :
-    Button<MultiSliderValue>(frame, icon, title, description, ButtonType.MULTISLIDER, value) {
+    Button<MultiSliderValue>(frame, icon, title, description, ButtonType.MULTISLIDER,contentKey,value) {
     fun setMinimumValue(value: Float) {
         this.value.minimum = value
     }
@@ -36,14 +37,15 @@ class MultiSliderBuilder(
     maximumValue: Float,
     var minimum: Float,
     var maximum: Float,
-    var increment: Float
+    var increment: Float,
+    val contentKey: String
 ) :
     ButtonBuilder<MultiSlider, MultiSliderValue, MultiSliderBuilder>(
         frame,
         title, MultiSliderValue(minimumValue, maximumValue)
     ) {
     override fun build(): MultiSlider {
-        val slider = MultiSlider(frame, icon, title, description, value, minimum, maximum, increment)
+        val slider = MultiSlider(frame, icon, title, description, value,contentKey, minimum, maximum, increment)
         slider.conditions(activeConditions, renderConditions)
         frame.addButton(slider)
         return slider

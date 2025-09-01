@@ -2,11 +2,11 @@ package rip.ambrosia.menu.creator
 
 import rip.ambrosia.menu.creator.buttons.*
 
-class FrameBuilder(title: String) {
-    val frame: Frame = Frame(title)
+class FrameBuilder(title: String, contentKey: String) {
+    val frame: Frame = Frame(title, contentKey )
 
-    fun createCheckbox(title: String, value: Boolean): CheckboxBuilder {
-        return CheckboxBuilder(frame, title, value)
+    fun createCheckbox(title: String, value: Boolean, contentKey: String): CheckboxBuilder {
+        return CheckboxBuilder(frame, title, value, contentKey)
     }
 
     fun createSlider(
@@ -14,9 +14,9 @@ class FrameBuilder(title: String) {
         value: Float,
         minimum: Float,
         maximum: Float,
-        increment: Float
+        increment: Float, contentKey: String
     ): SliderBuilder {
-        return SliderBuilder(frame, title, value, minimum, maximum, increment)
+        return SliderBuilder(frame, title, value, minimum, maximum, increment,contentKey)
     }
 
     fun createMultiSlider(
@@ -25,16 +25,16 @@ class FrameBuilder(title: String) {
         maximumValue: Float,
         minimum: Float,
         maximum: Float,
-        increment: Float
+        increment: Float, contentKey: String
     ): MultiSliderBuilder {
-        return MultiSliderBuilder(frame, title, minimumValue, maximumValue, minimum, maximum, increment)
+        return MultiSliderBuilder(frame, title, minimumValue, maximumValue, minimum, maximum, increment,contentKey)
     }
 
-    fun createColorPicker(title: String, value: Int, vararg modes: ColorPickerMode): ColorPickerBuilder {
+    fun createColorPicker(title: String, value: Int, vararg modes: ColorPickerMode, contentKey: String): ColorPickerBuilder {
         var list = modes.toList();
         if(modes.isEmpty()) {
             list = listOf(ColorPickerMode.HUE,ColorPickerMode.ALPHA,ColorPickerMode.BRIGHTNESS)
         }
-        return ColorPickerBuilder(frame, title, value, list)
+        return ColorPickerBuilder(frame, title, value, list,contentKey)
     }
 }

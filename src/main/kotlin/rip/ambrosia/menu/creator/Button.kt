@@ -3,11 +3,11 @@ package rip.ambrosia.menu.creator
 import com.google.gson.annotations.Expose
 import java.util.function.BooleanSupplier
 
-open class Button<V>( val frame: Frame,
-                      val icon: String,
-                      @Expose
+open class Button<V>(val frame: Frame,
+                     val icon: String,
+                     @Expose
                       val title: String,
-                     val description: String, @Expose val type:ButtonType, initialValue: V) {
+                     val description: String, @Expose val type:ButtonType, val contentKey: String, initialValue: V) {
     @Expose
     var value: V = initialValue
     var activeConditions: List<BooleanSupplier>? = null

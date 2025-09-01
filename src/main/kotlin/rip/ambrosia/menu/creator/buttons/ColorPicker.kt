@@ -13,8 +13,9 @@ class ColorPicker(
     title: String,
     description: String,
     value: Int,
+    contentKey: String,
    val colorPickerModes: List<ColorPickerMode>
-) : Button<Int>(frame, icon, title, description, ButtonType.COLORPICKER, value) {
+) : Button<Int>(frame, icon, title, description, ButtonType.COLORPICKER, contentKey,value) {
     var hue = 0.0f
     var saturation = 0.0f
     var brightness = 0.0f
@@ -75,14 +76,14 @@ class ColorPickerBuilder(
     frame: Frame,
     title: String,
     value: Int,
-    val colorPickerModes: List<ColorPickerMode>
+    val colorPickerModes: List<ColorPickerMode>,val contentKey: String
 ) : ButtonBuilder<ColorPicker, Int, ColorPickerBuilder>(frame, title, value) {
     override fun build(): ColorPicker {
         var list = colorPickerModes
         if (colorPickerModes.size == 1 && colorPickerModes[0] == ColorPickerMode.BRIGHTNESS) {
             list = listOf(ColorPickerMode.HUE, ColorPickerMode.BRIGHTNESS)
         }
-        val slider = ColorPicker(frame, icon, title, description, value, colorPickerModes)
+        val slider = ColorPicker(frame, icon, title, description, value, contentKey,colorPickerModes)
         slider.conditions(activeConditions, renderConditions)
         frame.addButton(slider)
         return slider

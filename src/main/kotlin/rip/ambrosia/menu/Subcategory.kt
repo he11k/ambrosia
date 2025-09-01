@@ -4,7 +4,7 @@ import com.google.gson.annotations.Expose
 import rip.ambrosia.menu.creator.Frame
 import rip.ambrosia.menu.creator.FrameHolder
 
-class Subcategory(val parent: Category,@Expose val title: String, val icon: String): FrameHolder() {
+class Subcategory(val parent: Category,@Expose val title: String, val icon: String, val key: String): FrameHolder() {
     fun getFrame(title: String): Frame? {
         for (frame in frames) {
             if(frame.title == title) {
@@ -13,4 +13,13 @@ class Subcategory(val parent: Category,@Expose val title: String, val icon: Stri
         }
         return null
     }
+    fun getFrameFromKey(key: String): Frame? {
+        for (frame in frames) {
+            if (frame.contentKey == key) {
+                return frame
+            }
+        }
+        return null
+    }
+
 }

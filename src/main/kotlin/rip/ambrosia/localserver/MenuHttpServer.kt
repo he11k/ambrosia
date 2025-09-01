@@ -6,14 +6,13 @@ import com.sun.net.httpserver.HttpHandler
 import com.sun.net.httpserver.HttpServer
 import rip.ambrosia.Ambrosia
 import rip.ambrosia.menu.Category
-import rip.ambrosia.menu.MainWindow
+import rip.ambrosia.menu.creator.ButtonType
 import rip.ambrosia.menu.creator.buttons.Checkbox
 import rip.ambrosia.menu.creator.buttons.Slider
 import rip.ambrosia.module.Test
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.nio.charset.StandardCharsets
-import kotlin.collections.forEach
 import kotlin.collections.map
 
 class MenuHttpServer {
@@ -30,21 +29,75 @@ class MenuHttpServer {
     fun load() {
         val server = HttpServer.create(InetSocketAddress(9123), 0)
 
-        server.createContext("/categories", CategoriesHandler())
+        server.createContext("/menu", LoadHandler())
+        server.createContext("/update-checkbox", UpdateCheckboxHandler())
 
         server.executor = null
         server.start()
         println("Local-Server started at http://localhost:9123")
     }
 
-    internal class CategoriesHandler : HttpHandler {
-        data class JSSubcategory(val name: String, val icon: String, val frames: List<JSFrame>)
-        data class JSCategory(val subcategories: List<JSSubcategory>, val name: String, val icon: String)
+    internal class UpdateCheckboxHandler : HttpHandler {
+        data class UpdateRequest(
+            val category: String,
+            val subcategory: String,
+            val frame: String,
+            val name: String,
+            val type: String,
+            val value: Boolean
+        )
+
+        override fun handle(exchange: HttpExchange) {
+            exchange.responseHeaders.add("Access-Control-Allow-Origin", "*")
+            exchange.responseHeaders.add("Access-Control-Allow-Methods", "POST, OPTIONS")
+            exchange.responseHeaders.add("Access-Control-Allow-Headers", "Content-Type")
+
+            if (exchange.requestMethod == "OPTIONS") {
+                exchange.sendResponseHeaders(200, -1)
+                return
+            }
+
+            if (exchange.requestMethod != "POST") {
+                exchange.sendResponseHeaders(405, -1)
+                return
+            }
+
+            val body = exchange.requestBody.bufferedReader().use { it.readText() }
+            try {
+                val request = Gson().fromJson(body, UpdateRequest::class.java)
+
+                val category = Ambrosia.menu.primary.getCategoryFromKey(request.category)
+                val subcategory = category!!.getCategoryFromKey(request.subcategory)
+                val frame = subcategory!!.getFrameFromKey(request.frame)
+                val button = frame!!.getButtonFromKey(request.name, ButtonType.valueOf(request.type))
+
+                if (button is Checkbox) {
+                    button.value = request.value
+                }
+
+                exchange.sendResponseHeaders(200, -1)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                exchange.sendResponseHeaders(500, -1)
+            }
+        }
+    }
+
+    internal class LoadHandler : HttpHandler {
+        data class JSSubcategory(val name: String, val icon: String, val frames: List<JSFrame>, val contentKey: String)
+        data class JSCategory(
+            val subcategories: List<JSSubcategory>,
+            val name: String,
+            val icon: String,
+            val contentKey: String
+        )
+
         sealed class JSButton {
             abstract val icon: String
             abstract val name: String
             abstract val description: String
             abstract val type: String
+            abstract val contentKey: String
         }
 
         data class JSCheckbox(
@@ -52,7 +105,8 @@ class MenuHttpServer {
             override val name: String,
             override val description: String,
             val value: Boolean,
-            override val type: String = "CHECKBOX"
+            override val type: String = "CHECKBOX",
+            override val contentKey: String
         ) : JSButton()
 
         data class JSSlider(
@@ -60,10 +114,11 @@ class MenuHttpServer {
             override val name: String,
             override val description: String,
             val value: Float,
-            override val type: String = "SLIDER"
+            override val type: String = "SLIDER",
+            override val contentKey: String
         ) : JSButton()
 
-        data class JSFrame(val name: String, val buttons: List<JSButton>)
+        data class JSFrame(val name: String, val buttons: List<JSButton>, val contentKey: String)
 
         @Throws(IOException::class)
         override fun handle(exchange: HttpExchange) {
@@ -80,39 +135,50 @@ class MenuHttpServer {
                         JSCategory(
                             name = cat.title,
                             icon = cat.icon,
+                            contentKey = cat.key,
                             subcategories = cat.subcategories.map { sub ->
-                                JSSubcategory(name = sub.title, icon = sub.icon, frames = sub.frames.map { f ->
-                                    JSFrame(name = f.title, buttons = f.buttons.map { b ->
-                                        when (b) {
-                                            is Checkbox -> {
-                                                JSCheckbox(
-                                                    icon = b.icon,
-                                                    name = b.title,
-                                                    description = b.description,
-                                                    value = b.value
-                                                )
-                                            }
+                                JSSubcategory(
+                                    name = sub.title,
+                                    icon = sub.icon,
+                                    contentKey = sub.key,
+                                    frames = sub.frames.map { f ->
+                                        JSFrame(
+                                            name = f.title,
+                                            contentKey = f.contentKey,
+                                            buttons = f.buttons.map { b ->
+                                                when (b) {
+                                                    is Checkbox -> {
+                                                        JSCheckbox(
+                                                            icon = b.icon,
+                                                            name = b.title,
+                                                            description = b.description,
+                                                            value = b.value,
+                                                            contentKey = b.contentKey
+                                                        )
+                                                    }
 
-                                            is Slider -> {
-                                                JSSlider(
-                                                    icon = b.icon,
-                                                    name = b.title,
-                                                    description = b.description,
-                                                    value = b.value
-                                                )
-                                            }
+                                                    is Slider -> {
+                                                        JSSlider(
+                                                            icon = b.icon,
+                                                            name = b.title,
+                                                            description = b.description,
+                                                            value = b.value,
+                                                            contentKey = b.contentKey
+                                                        )
+                                                    }
 
-                                            else -> {
-                                                JSCheckbox(
-                                                    icon = b.icon,
-                                                    name = b.title,
-                                                    description = b.description,
-                                                    value = true
-                                                )
-                                            }
-                                        }
+                                                    else -> {
+                                                        JSCheckbox(
+                                                            icon = b.icon,
+                                                            name = "Error value ${b.type.name}",
+                                                            description = "Error value ${b.type.name}",
+                                                            value = true,
+                                                            contentKey = b.contentKey
+                                                        )
+                                                    }
+                                                }
+                                            })
                                     })
-                                })
                             }
                         )
                     } ?: emptyList())
