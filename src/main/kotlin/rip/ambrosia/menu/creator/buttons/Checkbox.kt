@@ -14,9 +14,7 @@ class Checkbox(
     value: Boolean,
     contentKey: String,
     @Expose
-    var key: Int = -1,
-   private val enable: ButtonCallback?,
-    private val disable: ButtonCallback?
+    var key: Int = -1
 ) : Button<Boolean>(frame, icon, title,  description, ButtonType.CHECKBOX, contentKey,value) {
 
     fun updateKey(key: Int) {
@@ -30,15 +28,6 @@ class Checkbox(
     }
 
     override fun setValue0(value: Boolean) {
-        if (value) {
-            if (enable != null) {
-                enable.run(this)
-            }
-        } else {
-            if (disable != null) {
-                disable.run(this)
-            }
-        }
         this.value = value
     }
 }
@@ -47,8 +36,6 @@ class CheckboxBuilder(frame: Frame, title: String, value: Boolean, val contentKe
     ButtonBuilder<Checkbox, Boolean, CheckboxBuilder?>(frame, title, value) {
     var bindable: Boolean = false
     var key: Int = -1
-    var enable: ButtonCallback? = null
-    var disable: ButtonCallback? = null
 
     fun bindable(): CheckboxBuilder {
         this.bindable = true
@@ -60,20 +47,11 @@ class CheckboxBuilder(frame: Frame, title: String, value: Boolean, val contentKe
         return this
     }
 
-    fun enable(callback: ButtonCallback): CheckboxBuilder {
-        this.enable = callback
-        return this
-    }
-
-    fun disable(callback: ButtonCallback): CheckboxBuilder {
-        this.disable = callback
-        return this
-    }
 
     override fun build(): Checkbox {
         val checkbox = Checkbox(
             frame, icon, title, description,
-            value, contentKey , key, enable, disable
+            value, contentKey , key
         )
         checkbox.conditions(activeConditions, renderConditions)
         frame.addButton(checkbox)

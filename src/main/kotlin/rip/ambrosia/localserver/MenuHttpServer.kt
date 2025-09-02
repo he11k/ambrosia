@@ -8,6 +8,7 @@ import rip.ambrosia.Ambrosia
 import rip.ambrosia.menu.Category
 import rip.ambrosia.menu.creator.ButtonType
 import rip.ambrosia.menu.creator.buttons.Checkbox
+import rip.ambrosia.menu.creator.buttons.Selectbox
 import rip.ambrosia.menu.creator.buttons.Slider
 import rip.ambrosia.module.Test
 import java.io.IOException
@@ -75,6 +76,8 @@ class MenuHttpServer {
                     button.value = request.value as Boolean
                 } else if (button is Slider) {
                     button.value = (request.value as Double).toFloat()
+                }else if (button is Selectbox) {
+                    button.value = request.value as String
                 }
 
                 exchange.sendResponseHeaders(200, -1)
@@ -110,7 +113,15 @@ class MenuHttpServer {
             override val type: String = "CHECKBOX",
             override val contentKey: String
         ) : JSButton()
-
+        data class JSSelectbox(
+            override val icon: String,
+            override val name: String,
+            override val description: String,
+            val value: String,
+            val values: Array<String>,
+            override val type: String = "SELECTBOX",
+            override val contentKey: String
+        ) : JSButton()
         data class JSSlider(
             override val icon: String,
             override val name: String,
@@ -171,6 +182,16 @@ class MenuHttpServer {
                                                             minimum = b.minimum,
                                                             maximum = b.maximum,
                                                             increment = b.increment,
+                                                            contentKey = b.contentKey
+                                                        )
+                                                    }
+                                                    is Selectbox -> {
+                                                        JSSelectbox(
+                                                            icon = b.icon,
+                                                            name = b.title,
+                                                            description = b.description,
+                                                            value = b.value,
+                                                            values = b.values,
                                                             contentKey = b.contentKey
                                                         )
                                                     }

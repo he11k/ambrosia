@@ -3,15 +3,18 @@ package rip.ambrosia.module
 import rip.ambrosia.Ambrosia
 import rip.ambrosia.menu.creator.FrameBuilder
 import rip.ambrosia.menu.creator.buttons.Checkbox
+import rip.ambrosia.menu.creator.buttons.Selectbox
 import rip.ambrosia.menu.creator.buttons.Slider
 
 class Test {
 
     val mainFrame: FrameBuilder = Ambrosia.menu.primary.main.attackAura.frame("Основное", "main")
     val enable: Checkbox = mainFrame.createCheckbox("Включить", true, "enable").build()
+    val mode: Selectbox = mainFrame.createSelectbox("Режим",  "mode")
+        .addValue("Дистанция").addSelectedValue("Здоровье").addValue("Поле-Зрения").build()
     val distance: Slider = mainFrame.createSlider("Дистанция",5F,0F,10F,0.5F,"distance").build()
     val speed: Slider = mainFrame.createSlider("Скорость",30F,0F,180F,1F,"speed").build()
-    val amp: Slider = mainFrame.createSlider("Амплтуда",0.2F,0F,1F,0.1F,"amp").build()
+    val amp: Slider = mainFrame.createSlider("Амплитуда",0.2F,0F,1F,0.1F,"amp").build()
     val condFrame: FrameBuilder = Ambrosia.menu.primary.main.attackAura.frame("Условия", "condition")
     val visualFrame: FrameBuilder = Ambrosia.menu.primary.main.attackAura.frame("Визуализация", "visual")
 

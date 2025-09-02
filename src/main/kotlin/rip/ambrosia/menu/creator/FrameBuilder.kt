@@ -8,6 +8,9 @@ class FrameBuilder(title: String, contentKey: String) {
     fun createCheckbox(title: String, value: Boolean, contentKey: String): CheckboxBuilder {
         return CheckboxBuilder(frame, title, value, contentKey)
     }
+    fun createSelectbox(title: String, contentKey: String): SelectboxBuilder {
+        return SelectboxBuilder(frame, title,  contentKey)
+    }
 
     fun createSlider(
         title: String,
