@@ -30,21 +30,21 @@ class MenuHttpServer {
         val server = HttpServer.create(InetSocketAddress(9123), 0)
 
         server.createContext("/menu", LoadHandler())
-        server.createContext("/update-checkbox", UpdateCheckboxHandler())
+        server.createContext("/update-button", UpdateButtonHandler())
 
         server.executor = null
         server.start()
         println("Local-Server started at http://localhost:9123")
     }
 
-    internal class UpdateCheckboxHandler : HttpHandler {
+    internal class UpdateButtonHandler : HttpHandler {
         data class UpdateRequest(
             val category: String,
             val subcategory: String,
             val frame: String,
             val name: String,
             val type: String,
-            val value: Boolean
+            val value: Any
         )
 
         override fun handle(exchange: HttpExchange) {
@@ -72,7 +72,9 @@ class MenuHttpServer {
                 val button = frame!!.getButtonFromKey(request.name, ButtonType.valueOf(request.type))
 
                 if (button is Checkbox) {
-                    button.value = request.value
+                    button.value = request.value as Boolean
+                } else if (button is Slider) {
+                    button.value = (request.value as Double).toFloat()
                 }
 
                 exchange.sendResponseHeaders(200, -1)
@@ -114,6 +116,9 @@ class MenuHttpServer {
             override val name: String,
             override val description: String,
             val value: Float,
+            val minimum: Float,
+            val maximum: Float,
+            val increment: Float,
             override val type: String = "SLIDER",
             override val contentKey: String
         ) : JSButton()
@@ -163,6 +168,9 @@ class MenuHttpServer {
                                                             name = b.title,
                                                             description = b.description,
                                                             value = b.value,
+                                                            minimum = b.minimum,
+                                                            maximum = b.maximum,
+                                                            increment = b.increment,
                                                             contentKey = b.contentKey
                                                         )
                                                     }
