@@ -28,6 +28,7 @@ class MainWindow {
     val environment: Category = createCategory(Category(this, "Окружение", "pickaxe", "environmentCategory"), Category.Group.CATEGORIES)
     val information: Category = createCategory(Category(this, "Информация", "loupe", "informationCategory"), Category.Group.CATEGORIES)
     val configs: Category = createCategory(Category(this, "Конфиги", "gear", "configCategory"), Category.Group.OTHER)
+    val scripts: Category = createCategory(Category(this, "Скрипты", "gear", "scriptsCategory"), Category.Group.OTHER)
 
     constructor() {
 

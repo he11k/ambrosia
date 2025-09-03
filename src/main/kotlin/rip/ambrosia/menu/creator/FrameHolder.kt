@@ -7,7 +7,7 @@ open class FrameHolder {
     val frames: MutableList<Frame> = ArrayList()
 
    open fun frame(title: String, key: String): FrameBuilder {
-        val frameBuilder = FrameBuilder(title, key)
+        val frameBuilder = FrameBuilder(title, key, this)
         frames.add(frameBuilder.frame)
         return frameBuilder
     }

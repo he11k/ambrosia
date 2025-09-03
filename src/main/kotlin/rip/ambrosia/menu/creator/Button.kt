@@ -1,45 +1,49 @@
 package rip.ambrosia.menu.creator
 
 import com.google.gson.annotations.Expose
+import rip.ambrosia.menu.creator.buttons.Checkbox
+import rip.ambrosia.menu.creator.condition.Condition
 import java.util.function.BooleanSupplier
 
-open class Button<V>(val frame: Frame,
-                     val icon: String,
-                     @Expose
-                      val title: String,
-                     val description: String, @Expose val type:ButtonType, val contentKey: String, initialValue: V) {
+open class Button<V>(
+    val frame: Frame,
+    val icon: String,
+    @Expose
+    val title: String,
+    val description: String, @Expose val type: ButtonType, val contentKey: String, initialValue: V
+) {
     @Expose
     var value: V = initialValue
-    var activeConditions: List<BooleanSupplier>? = null
-    var renderConditions: List<BooleanSupplier>? = null
+    var activeConditions: List<Condition<*,*>>? = null
+    var renderConditions: List<Condition<*,*>>? = null
 
-    fun ableToRender(): Boolean {
-        if (renderConditions != null) {
-            for (condition in renderConditions!!) {
-                if (!condition.asBoolean) {
-                    return false
-                }
-            }
-        }
-        return true
-    }
-
-    fun active(): Boolean {
-        if (activeConditions != null) {
-            for (condition in activeConditions!!) {
-                if (!condition.asBoolean) {
-                    return false
-                }
-            }
-        }
-        return true
-    }
+//    fun ableToRender(): Boolean {
+//        if (renderConditions != null) {
+//            for (condition in renderConditions!!) {
+//                if (!condition.asBoolean) {
+//                    return false
+//                }
+//            }
+//        }
+//        return true
+//    }
+//
+//    fun active(): Boolean {
+//        if (activeConditions != null) {
+//            for (condition in activeConditions!!) {
+//                if (!condition.asBoolean) {
+//                    return false
+//                }
+//            }
+//        }
+//        return true
+//    }
 
     open fun setValue0(value: V) {
         this.value = value;
     }
 
-    fun conditions(activeConditions: List<BooleanSupplier>?, renderConditions: List<BooleanSupplier>?) {
+    fun conditions(activeConditions: List<Condition<*,*>>?, renderConditions: List<Condition<*,*>>?) {
         this.activeConditions = activeConditions
         this.renderConditions = renderConditions
     }
@@ -49,8 +53,8 @@ abstract class ButtonBuilder<T, V, B>(protected val frame: Frame, protected var 
 
     protected var description: String = ""
     protected var icon: String = "H"
-    protected var activeConditions: MutableList<BooleanSupplier>? = null
-    protected var renderConditions: MutableList<BooleanSupplier>? = null
+    protected var activeConditions: MutableList<Condition<*,*>>? = null
+    protected var renderConditions: MutableList<Condition<*,*>>? = null
 
     fun description(description: String): B {
         this.description = description
@@ -62,7 +66,7 @@ abstract class ButtonBuilder<T, V, B>(protected val frame: Frame, protected var 
         return this as B
     }
 
-    fun renderCondition(condition: BooleanSupplier): B {
+    fun renderCondition(condition: Condition<*,*>): B {
         if (renderConditions == null) {
             renderConditions = ArrayList()
         }
@@ -70,7 +74,7 @@ abstract class ButtonBuilder<T, V, B>(protected val frame: Frame, protected var 
         return this as B
     }
 
-    fun activeCondition(condition: BooleanSupplier): B {
+    fun activeCondition(condition: Condition<*,*>): B {
         if (activeConditions == null) {
             activeConditions = ArrayList()
         }

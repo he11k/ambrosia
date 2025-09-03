@@ -2,8 +2,8 @@ package rip.ambrosia.menu.creator
 
 import rip.ambrosia.menu.creator.buttons.*
 
-class FrameBuilder(title: String, contentKey: String) {
-    val frame: Frame = Frame(title, contentKey )
+class FrameBuilder(title: String, contentKey: String, frameHolder: FrameHolder) {
+    val frame: Frame = Frame(title, contentKey, frameHolder)
 
     fun createCheckbox(title: String, value: Boolean, contentKey: String): CheckboxBuilder {
         return CheckboxBuilder(frame, title, value, contentKey)

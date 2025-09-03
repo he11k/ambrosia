@@ -2,7 +2,7 @@ package rip.ambrosia.menu.creator
 
 import com.google.gson.annotations.Expose
 
-class Frame(@Expose internal val title: String, val contentKey: String) {
+class Frame(@Expose internal val title: String, val contentKey: String, val frameHolder: FrameHolder) {
     @Expose
     internal var buttons: MutableList<Button<*>> = ArrayList()
 

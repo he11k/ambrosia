@@ -5,24 +5,177 @@ import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 import com.sun.net.httpserver.HttpServer
 import rip.ambrosia.Ambrosia
+import rip.ambrosia.localserver.MenuHttpServer.UpdateButtonHandler.UpdateRequest
 import rip.ambrosia.menu.Category
+import rip.ambrosia.menu.creator.Button
 import rip.ambrosia.menu.creator.ButtonType
 import rip.ambrosia.menu.creator.buttons.Checkbox
 import rip.ambrosia.menu.creator.buttons.Selectbox
 import rip.ambrosia.menu.creator.buttons.Slider
+import rip.ambrosia.menu.creator.condition.CheckboxCondition
+import rip.ambrosia.menu.creator.condition.Condition
+import rip.ambrosia.menu.creator.condition.SelectboxCondition
 import rip.ambrosia.module.Test
+import rip.ambrosia.module.Test2
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.nio.charset.StandardCharsets
 import kotlin.collections.map
 
 class MenuHttpServer {
+    sealed class JSButton {
+        abstract val icon: String
+        abstract val name: String
+        abstract val description: String
+        abstract val type: String
+        abstract val contentKey: String
+        abstract val active: Boolean
+        abstract val activeConditions: Array<JSCondition>
+        abstract val render: Boolean
+        abstract val renderConditions: Array<JSCondition>
+    }
+
+    sealed class JSCondition {
+        abstract val contentKey: String
+        abstract val type: String
+    }
+
+    data class JSCheckboxCondition(override val contentKey: String, val value: Boolean,override val type: String = "CHECKBOX") : JSCondition()
+    data class JSSelectboxCondition(override val contentKey: String, val value: String,override val type: String = "SELECTBOX") : JSCondition()
+    data class JSCheckbox(
+        override val icon: String,
+        override val name: String,
+        override val description: String,
+        val value: Boolean,
+        override val active: Boolean,
+        override val activeConditions: Array<JSCondition>,
+        override val render: Boolean,
+        override val renderConditions: Array<JSCondition>,
+        override val type: String = "CHECKBOX",
+        override val contentKey: String
+    ) : JSButton()
+
+    data class JSSelectbox(
+        override val icon: String,
+        override val name: String,
+        override val description: String,
+        val value: String,
+        val values: Array<String>,
+        override val active: Boolean,
+        override val activeConditions: Array<JSCondition>,
+        override val render: Boolean,
+        override val renderConditions: Array<JSCondition>,
+        override val type: String = "SELECTBOX",
+        override val contentKey: String
+    ) : JSButton()
+
+    data class JSSlider(
+        override val icon: String,
+        override val name: String,
+        override val description: String,
+        val value: Float,
+        val minimum: Float,
+        val maximum: Float,
+        val increment: Float,
+        override val active: Boolean,
+        override val activeConditions: Array<JSCondition>,
+        override val render: Boolean,
+        override val renderConditions: Array<JSCondition>,
+        override val type: String = "SLIDER",
+        override val contentKey: String
+    ) : JSButton()
+
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
             Ambrosia.menu
             Test()
+            Test2()
             MenuHttpServer().load()
+        }
+
+        fun getConditions(conditions: List<Condition<*,*>>?): Array<JSCondition> {
+            return conditions?.map { cond ->
+                when (cond) {
+                    is CheckboxCondition -> {
+                        JSCheckboxCondition(cond.getPath(), cond.getValue())
+                    }
+
+                    is SelectboxCondition -> {
+                        JSSelectboxCondition(cond.getPath(), cond.getValue())
+                    }
+
+                    else -> {
+                        JSCheckboxCondition("", true)
+                    }
+                }
+            }?.toTypedArray() ?: emptyArray()
+        }
+
+        fun getButtons(buttons: MutableList<Button<*>>): List<JSButton> {
+            return buttons.map { b ->
+                when (b) {
+                    is Checkbox -> {
+                        JSCheckbox(
+                            icon = b.icon,
+                            name = b.title,
+                            description = b.description,
+                            value = b.value,
+                            contentKey = b.contentKey,
+                            activeConditions = getConditions(b.activeConditions),
+                            active = true,
+                            renderConditions = getConditions(b.renderConditions),
+                            render = true,
+                        )
+                    }
+
+                    is Slider -> {
+                        JSSlider(
+                            icon = b.icon,
+                            name = b.title,
+                            description = b.description,
+                            value = b.value,
+                            minimum = b.minimum,
+                            maximum = b.maximum,
+                            increment = b.increment,
+                            contentKey = b.contentKey,
+                            activeConditions = getConditions(b.activeConditions),
+                            active = true,
+                            renderConditions = getConditions(b.renderConditions),
+                            render = true,
+                        )
+                    }
+
+                    is Selectbox -> {
+                        JSSelectbox(
+                            icon = b.icon,
+                            name = b.title,
+                            description = b.description,
+                            value = b.value,
+                            values = b.values,
+                            contentKey = b.contentKey,
+                            activeConditions = getConditions(b.activeConditions),
+                            active = true,
+                            renderConditions = getConditions(b.renderConditions),
+                            render = true,
+                        )
+                    }
+
+                    else -> {
+                        JSCheckbox(
+                            icon = b.icon,
+                            name = "Error value ${b.type.name}",
+                            description = "Error value ${b.type.name}",
+                            value = true,
+                            contentKey = b.contentKey,
+                            activeConditions = getConditions(b.activeConditions),
+                            active = true,
+                            renderConditions = getConditions(b.renderConditions),
+                            render = true,
+                        )
+                    }
+                }
+            }.toList()
         }
     }
 
@@ -76,7 +229,7 @@ class MenuHttpServer {
                     button.value = request.value as Boolean
                 } else if (button is Slider) {
                     button.value = (request.value as Double).toFloat()
-                }else if (button is Selectbox) {
+                } else if (button is Selectbox) {
                     button.value = request.value as String
                 }
 
@@ -88,6 +241,7 @@ class MenuHttpServer {
         }
     }
 
+
     internal class LoadHandler : HttpHandler {
         data class JSSubcategory(val name: String, val icon: String, val frames: List<JSFrame>, val contentKey: String)
         data class JSCategory(
@@ -97,42 +251,6 @@ class MenuHttpServer {
             val contentKey: String
         )
 
-        sealed class JSButton {
-            abstract val icon: String
-            abstract val name: String
-            abstract val description: String
-            abstract val type: String
-            abstract val contentKey: String
-        }
-
-        data class JSCheckbox(
-            override val icon: String,
-            override val name: String,
-            override val description: String,
-            val value: Boolean,
-            override val type: String = "CHECKBOX",
-            override val contentKey: String
-        ) : JSButton()
-        data class JSSelectbox(
-            override val icon: String,
-            override val name: String,
-            override val description: String,
-            val value: String,
-            val values: Array<String>,
-            override val type: String = "SELECTBOX",
-            override val contentKey: String
-        ) : JSButton()
-        data class JSSlider(
-            override val icon: String,
-            override val name: String,
-            override val description: String,
-            val value: Float,
-            val minimum: Float,
-            val maximum: Float,
-            val increment: Float,
-            override val type: String = "SLIDER",
-            override val contentKey: String
-        ) : JSButton()
 
         data class JSFrame(val name: String, val buttons: List<JSButton>, val contentKey: String)
 
@@ -161,52 +279,8 @@ class MenuHttpServer {
                                         JSFrame(
                                             name = f.title,
                                             contentKey = f.contentKey,
-                                            buttons = f.buttons.map { b ->
-                                                when (b) {
-                                                    is Checkbox -> {
-                                                        JSCheckbox(
-                                                            icon = b.icon,
-                                                            name = b.title,
-                                                            description = b.description,
-                                                            value = b.value,
-                                                            contentKey = b.contentKey
-                                                        )
-                                                    }
-
-                                                    is Slider -> {
-                                                        JSSlider(
-                                                            icon = b.icon,
-                                                            name = b.title,
-                                                            description = b.description,
-                                                            value = b.value,
-                                                            minimum = b.minimum,
-                                                            maximum = b.maximum,
-                                                            increment = b.increment,
-                                                            contentKey = b.contentKey
-                                                        )
-                                                    }
-                                                    is Selectbox -> {
-                                                        JSSelectbox(
-                                                            icon = b.icon,
-                                                            name = b.title,
-                                                            description = b.description,
-                                                            value = b.value,
-                                                            values = b.values,
-                                                            contentKey = b.contentKey
-                                                        )
-                                                    }
-
-                                                    else -> {
-                                                        JSCheckbox(
-                                                            icon = b.icon,
-                                                            name = "Error value ${b.type.name}",
-                                                            description = "Error value ${b.type.name}",
-                                                            value = true,
-                                                            contentKey = b.contentKey
-                                                        )
-                                                    }
-                                                }
-                                            })
+                                            buttons = getButtons(f.buttons)
+                                        )
                                     })
                             }
                         )
