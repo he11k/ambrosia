@@ -60,7 +60,7 @@ class Menu : Screen(Text.literal("menu")) {
         resizeBrowser(width, height)
     }
 
-    override fun close() {
+        override fun close() {
         super.close()
     }
 

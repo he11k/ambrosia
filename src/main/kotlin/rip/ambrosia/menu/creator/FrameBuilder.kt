@@ -11,7 +11,9 @@ class FrameBuilder(title: String, contentKey: String, frameHolder: FrameHolder) 
     fun createSelectbox(title: String, contentKey: String): SelectboxBuilder {
         return SelectboxBuilder(frame, title,  contentKey)
     }
-
+    fun createMultiSelectbox(title: String, contentKey: String): MultiSelectboxBuilder {
+        return MultiSelectboxBuilder(frame, title,  contentKey)
+    }
     fun createSlider(
         title: String,
         value: Float,

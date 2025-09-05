@@ -3,7 +3,10 @@
   "package": "rip.ambrosia.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "ChatScreenMixin"
+    "BlockCollisionSpliteratorMixin",
+    "ChatScreenMixin",
+    "EntityMixin",
+    "LivingEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -10,6 +10,7 @@ import rip.ambrosia.menu.Category
 import rip.ambrosia.menu.creator.Button
 import rip.ambrosia.menu.creator.ButtonType
 import rip.ambrosia.menu.creator.buttons.Checkbox
+import rip.ambrosia.menu.creator.buttons.MultiSelectbox
 import rip.ambrosia.menu.creator.buttons.Selectbox
 import rip.ambrosia.menu.creator.buttons.Slider
 import rip.ambrosia.menu.creator.condition.CheckboxCondition
@@ -40,8 +41,18 @@ class MenuHttpServer {
         abstract val type: String
     }
 
-    data class JSCheckboxCondition(override val contentKey: String, val value: Boolean,override val type: String = "CHECKBOX") : JSCondition()
-    data class JSSelectboxCondition(override val contentKey: String, val value: String,override val type: String = "SELECTBOX") : JSCondition()
+    data class JSCheckboxCondition(
+        override val contentKey: String,
+        val value: Boolean,
+        override val type: String = "CHECKBOX"
+    ) : JSCondition()
+
+    data class JSSelectboxCondition(
+        override val contentKey: String,
+        val value: String,
+        override val type: String = "SELECTBOX"
+    ) : JSCondition()
+
     data class JSCheckbox(
         override val icon: String,
         override val name: String,
@@ -66,6 +77,20 @@ class MenuHttpServer {
         override val render: Boolean,
         override val renderConditions: Array<JSCondition>,
         override val type: String = "SELECTBOX",
+        override val contentKey: String
+    ) : JSButton()
+
+    data class JSMultiSelectbox(
+        override val icon: String,
+        override val name: String,
+        override val description: String,
+        val value: Array<String>,
+        val values: Array<String>,
+        override val active: Boolean,
+        override val activeConditions: Array<JSCondition>,
+        override val render: Boolean,
+        override val renderConditions: Array<JSCondition>,
+        override val type: String = "MULTISELECTBOX",
         override val contentKey: String
     ) : JSButton()
 
@@ -94,7 +119,7 @@ class MenuHttpServer {
             MenuHttpServer().load()
         }
 
-        fun getConditions(conditions: List<Condition<*,*>>?): Array<JSCondition> {
+        fun getConditions(conditions: List<Condition<*, *>>?): Array<JSCondition> {
             return conditions?.map { cond ->
                 when (cond) {
                     is CheckboxCondition -> {
@@ -161,6 +186,21 @@ class MenuHttpServer {
                         )
                     }
 
+                    is MultiSelectbox -> {
+                        JSMultiSelectbox(
+                            icon = b.icon,
+                            name = b.title,
+                            description = b.description,
+                            value = b.value.toTypedArray(),
+                            values = b.values,
+                            contentKey = b.contentKey,
+                            activeConditions = getConditions(b.activeConditions),
+                            active = true,
+                            renderConditions = getConditions(b.renderConditions),
+                            render = true,
+                        )
+                    }
+
                     else -> {
                         JSCheckbox(
                             icon = b.icon,
@@ -181,7 +221,7 @@ class MenuHttpServer {
 
     @Throws(IOException::class)
     fun load() {
-        val server = HttpServer.create(InetSocketAddress(9123), 0)
+        val server = HttpServer.create(InetSocketAddress(9124), 0)
 
         server.createContext("/menu", LoadHandler())
         server.createContext("/update-button", UpdateButtonHandler())
@@ -224,13 +264,16 @@ class MenuHttpServer {
                 val subcategory = category!!.getCategoryFromKey(request.subcategory)
                 val frame = subcategory!!.getFrameFromKey(request.frame)
                 val button = frame!!.getButtonFromKey(request.name, ButtonType.valueOf(request.type))
-
+//                button!!.value = request.value
                 if (button is Checkbox) {
                     button.value = request.value as Boolean
                 } else if (button is Slider) {
                     button.value = (request.value as Double).toFloat()
                 } else if (button is Selectbox) {
                     button.value = request.value as String
+                } else if (button is MultiSelectbox) {
+                    button.value.removeAll(button.value)
+                    button.value.addAll(request.value as List<String>)
                 }
 
                 exchange.sendResponseHeaders(200, -1)

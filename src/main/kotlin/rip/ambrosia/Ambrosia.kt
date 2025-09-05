@@ -20,8 +20,9 @@ import rip.ambrosia.event.*
 import rip.ambrosia.localserver.MenuHttpServer
 import rip.ambrosia.menu.Menu
 import rip.ambrosia.module.Test
+import rip.ambrosia.module.movement.AirJumpModule
+import rip.ambrosia.module.movement.NoJumpDelayModule
 import rip.ambrosia.util.extensions.mc
-import rip.ambrosia.util.web.FolderMover
 
 val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
@@ -34,12 +35,17 @@ object Ambrosia : ModInitializer {
     var counter: Int = 0
 
     override fun onInitialize() {
+        logger.info("Ambrosia start loading")
         MCEFDownloadManager.sinit()
-        Test()
+
+
+
+        eventBus.register(listener)
+       NoJumpDelayModule
+        eventBus.register(AirJumpModule)
+        CommandController.load()
         MenuHttpServer().load()
         logger.info("Ambrosia was loaded")
-        eventBus.register(listener)
-        CommandController.load()
     }
 
     class Listener {

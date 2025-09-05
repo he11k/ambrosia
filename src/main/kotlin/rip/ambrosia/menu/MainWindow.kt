@@ -12,6 +12,7 @@ class MainWindow {
         val handle = createSubcategory("Аукцион", "sword", "handleSubcategory")
     }
     class MovementCategory(val window: MainWindow) : Category(window, "Движение", "person", "movementCategory") {
+        val player: Subcategory = createSubcategory("Игрок", "sword", "playerSubcategory")
 
     }
     class VisualCategory(val window: MainWindow) : Category(window, "Визуалы", "visual", "visualCategory") {

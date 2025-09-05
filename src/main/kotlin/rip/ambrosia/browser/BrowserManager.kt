@@ -2,7 +2,6 @@ package rip.ambrosia.browser
 
 import es.boffmedia.mcef.MCEF
 import es.boffmedia.mcef.MCEFBrowser
-import net.minecraft.client.MinecraftClient
 import net.minecraft.client.texture.AbstractTexture
 import net.minecraft.util.Identifier
 import rip.ambrosia.util.extensions.mc
@@ -20,9 +19,16 @@ object BrowserManager {
             val transparent = true
             browser = MCEF.createBrowser(url, transparent)
             resizeBrowser(
-                mc.window.scaledWidth,
-                mc.window.scaledHeight
+                mc.window.scaledWidth, mc.window.scaledHeight
             )
+
+            val script = """
+window.myFuncs = {
+    sayHello: function() { return "AMBROSIALOL"; }
+};
+window.dispatchEvent(new Event("myFuncsReady"));
+""".trimIndent()
+            browser!!.executeJavaScript(script, browser!!.getURL(), 0)
             mc.textureManager.registerTexture(texture, object : AbstractTexture() {
                 override fun getGlId(): Int {
                     return browser!!.renderer.textureID

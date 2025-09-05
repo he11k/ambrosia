@@ -20,7 +20,6 @@ import rip.ambrosia.config.ConfigProvider;
 import rip.ambrosia.event.FramebufferBlitEvent;
 import rip.ambrosia.event.LevelTickEvent;
 import rip.ambrosia.event.TickEvent;
-import rip.ambrosia.util.web.FolderMover;
 
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientMixin {

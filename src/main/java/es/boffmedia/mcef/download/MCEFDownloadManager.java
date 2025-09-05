@@ -11,24 +11,24 @@ import java.io.File;
 import java.io.IOException;
 
 public class MCEFDownloadManager {
-    private static void setupLibraryPath() throws IOException {
-        final File mcefLibrariesDir;
+        private static void setupLibraryPath() throws IOException {
+            final File mcefLibrariesDir;
 
-        // Check for development environment
-        // TODO: handle eclipse/others
-        // i.e. mcef-repo/forge/build
-        File buildDir = new File("../build");
-        if (buildDir.exists() && buildDir.isDirectory()) {
-            mcefLibrariesDir = new File(buildDir, "mcef-libraries/");
-        } else {
-            mcefLibrariesDir = new File("mods/mcef-libraries/");
+            // Check for development environment
+            // TODO: handle eclipse/others
+            // i.e. mcef-repo/forge/build
+            File buildDir = new File("../build");
+            if (buildDir.exists() && buildDir.isDirectory()) {
+                mcefLibrariesDir = new File(buildDir, "mcef-libraries/");
+            } else {
+                mcefLibrariesDir = new File("mods/mcef-libraries/");
+            }
+
+            mcefLibrariesDir.mkdirs();
+
+            System.setProperty("mcef.libraries.path", mcefLibrariesDir.getCanonicalPath());
+            System.setProperty("jcef.path", new File(mcefLibrariesDir, MCEFPlatform.getPlatform().getNormalizedName()).getCanonicalPath());
         }
-
-        mcefLibrariesDir.mkdirs();
-
-        System.setProperty("mcef.libraries.path", mcefLibrariesDir.getCanonicalPath());
-        System.setProperty("jcef.path", new File(mcefLibrariesDir, MCEFPlatform.getPlatform().getNormalizedName()).getCanonicalPath());
-    }
 
     public static void sinit() {
         try {

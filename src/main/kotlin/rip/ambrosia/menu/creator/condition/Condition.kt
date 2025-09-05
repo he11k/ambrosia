@@ -3,10 +3,8 @@ package rip.ambrosia.menu.creator.condition
 import rip.ambrosia.menu.Subcategory
 import rip.ambrosia.menu.creator.Button
 
-open class Condition<T, K>(val button: K) {
-    fun getValue(): T {
-        return (button as Button<T>).value
-    }
+abstract class Condition<T, K>(val button: K) {
+    abstract fun getValue(): T;
 
     fun getKey(): String {
         return (button as Button<T>).contentKey

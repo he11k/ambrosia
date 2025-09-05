@@ -1,8 +1,11 @@
 package rip.ambrosia.event
 
+import net.minecraft.block.BlockState
 import net.minecraft.client.render.Camera
 import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import net.minecraft.util.shape.VoxelShape
 import net.minecraftforge.eventbus.api.Event
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 
@@ -11,6 +14,8 @@ class TickEvent(): Event()
 
 class KeyEvent(val action: Int = 0, val key: Int = 0, val scancode: Int = 0) : Event()
 class CharacterEvent(val chr: Char = 'a', val modifiers: Int = 0) : Event()
+class PlayerJumpEvent(var motion: Float  = 0F, var yaw: Float  = 0F) : Event()
+class BlockShapeEvent(var state: BlockState? = null, var pos: BlockPos? = null, var shape: VoxelShape? = null) : Event()
 
 class PlayerVelocityStrafe(val movementInput: Vec3d = Vec3d.ZERO, val speed: Float= 0f, val yaw: Float = 0f, var velocity: Vec3d = Vec3d.ZERO) : Event()
 class MovementInputEvent(var forward: Float = 0f, var sideways: Float= 0f, val jump: Boolean = false) : Event()

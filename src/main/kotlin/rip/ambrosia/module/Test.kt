@@ -3,6 +3,7 @@ package rip.ambrosia.module
 import rip.ambrosia.Ambrosia
 import rip.ambrosia.menu.creator.FrameBuilder
 import rip.ambrosia.menu.creator.buttons.Checkbox
+import rip.ambrosia.menu.creator.buttons.MultiSelectbox
 import rip.ambrosia.menu.creator.buttons.Selectbox
 import rip.ambrosia.menu.creator.buttons.Slider
 import rip.ambrosia.menu.creator.condition.CheckboxCondition
@@ -14,6 +15,12 @@ class Test {
     val enable: Checkbox = mainFrame.createCheckbox("Включить", true, "enable").build()
     val mode: Selectbox = mainFrame.createSelectbox("Режим",  "mode")
         .addValue("Дистанция").addSelectedValue("Здоровье").addValue("Поле-Зрения").build()
+    val mode2: Selectbox = mainFrame.createSelectbox("Режим 2",  "mode2")
+        .addValue("Дистанция").addSelectedValue("Здоровье").addValue("Поле-Зрения").build()
+    val targets: MultiSelectbox = mainFrame.createMultiSelectbox("Цели",  "targets")
+        .addValue("Игроки").addSelectedValue("Мобы").addValue("Жители").build()
+    val targets2: MultiSelectbox = mainFrame.createMultiSelectbox("Цели 2",  "targets2")
+        .addValue("Игроки").addSelectedValue("Мобы").addValue("Жители").build()
     val distance: Slider = mainFrame.createSlider("Дистанция",5F,0F,10F,0.5F,"distance").renderCondition(
         CheckboxCondition(enable)).build()
     val speed: Slider = mainFrame.createSlider("Скорость",30F,0F,180F,1F,"speed").build()
